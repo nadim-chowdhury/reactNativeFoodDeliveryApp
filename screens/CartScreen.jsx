@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,29 +8,46 @@ import {
   TextInput,
   Button,
 } from 'react-native';
-import {cartItems, addresses, paymentMethods} from '../data/cart';
 
-const CartScreen = ({navigation}) => {
+// Demo data for cart items, addresses, and payment methods
+const cartItems = [
+  { id: 1, name: 'Product 1', price: 19.99, quantity: 2 },
+  { id: 2, name: 'Product 2', price: 9.99, quantity: 1 },
+  { id: 3, name: 'Product 3', price: 29.99, quantity: 3 },
+];
+
+const addresses = [
+  { id: 1, address: '123 Main St, Springfield' },
+  { id: 2, address: '456 Maple St, Springfield' },
+];
+
+const paymentMethods = [
+  { id: 1, method: 'Credit Card' },
+  { id: 2, method: 'PayPal' },
+  { id: 3, method: 'Cash on Delivery' },
+];
+
+const CartScreen = ({ navigation }) => {
   const [coupon, setCoupon] = useState('');
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
   const handleApplyCoupon = () => {
     // Apply coupon logic here
-    alert('Coupon applied');
+    alert('Coupon applied successfully!');
   };
 
   const handlePlaceOrder = () => {
     if (!selectedAddress || !selectedPaymentMethod) {
-      alert('Please select address and payment method');
+      alert('Please select both an address and payment method');
       return;
     }
     // Place order logic here
-    alert('Order placed');
+    alert('Your order has been placed!');
     navigation.navigate('OrderConfirmation');
   };
 
-  const renderCartItem = ({item}) => (
+  const renderCartItem = ({ item }) => (
     <View style={styles.cartItem}>
       <Text style={styles.cartItemName}>{item.name}</Text>
       <Text style={styles.cartItemPrice}>
@@ -42,24 +59,26 @@ const CartScreen = ({navigation}) => {
     </View>
   );
 
-  const renderAddress = ({item}) => (
+  const renderAddress = ({ item }) => (
     <TouchableOpacity
       style={[
         styles.addressItem,
         selectedAddress === item && styles.selectedItem,
       ]}
-      onPress={() => setSelectedAddress(item)}>
+      onPress={() => setSelectedAddress(item)}
+    >
       <Text style={styles.addressText}>{item.address}</Text>
     </TouchableOpacity>
   );
 
-  const renderPaymentMethod = ({item}) => (
+  const renderPaymentMethod = ({ item }) => (
     <TouchableOpacity
       style={[
         styles.paymentMethodItem,
         selectedPaymentMethod === item && styles.selectedItem,
       ]}
-      onPress={() => setSelectedPaymentMethod(item)}>
+      onPress={() => setSelectedPaymentMethod(item)}
+    >
       <Text style={styles.paymentMethodText}>{item.method}</Text>
     </TouchableOpacity>
   );
@@ -69,7 +88,7 @@ const CartScreen = ({navigation}) => {
       <Text style={styles.sectionTitle}>Cart Summary</Text>
       <FlatList
         data={cartItems}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderCartItem}
       />
 
@@ -84,14 +103,14 @@ const CartScreen = ({navigation}) => {
       <Text style={styles.sectionTitle}>Delivery Address</Text>
       <FlatList
         data={addresses}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderAddress}
       />
 
       <Text style={styles.sectionTitle}>Payment Options</Text>
       <FlatList
         data={paymentMethods}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderPaymentMethod}
       />
 
@@ -156,44 +175,3 @@ const styles = StyleSheet.create({
 });
 
 export default CartScreen;
-
-//  import React, { useState, useCallback, useEffect } from 'react';
-//  import { GiftedChat } from 'react-native-gifted-chat';
-//  import firebase from '../firebaseConfig';
-
-//  const ChatScreen = ({ route }) => {
-//    const { orderId } = route.params;
-//    const [messages, setMessages] = useState([]);
-
-//    useEffect(() => {
-//      const messagesRef = firebase.firestore().collection('orders').doc(orderId).collection('messages');
-//      const unsubscribe = messagesRef.orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-//        const messagesFirestore = snapshot.docs.map(doc => {
-//          const message = doc.data();
-//          return { ...message, createdAt: message.createdAt.toDate() };
-//        });
-//        setMessages(messagesFirestore);
-//      });
-//      return () => unsubscribe();
-//    }, []);
-
-//    const onSend = useCallback((messages = []) => {
-//      const messagesRef = firebase.firestore().collection('orders').doc(orderId).collection('messages');
-//      messages.forEach(message => {
-//        messagesRef.add({ ...message, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-//      });
-//    }, []);
-
-//    return (
-//      <GiftedChat
-//        messages={messages}
-//        onSend={messages => onSend(messages)}
-//        user={{
-//          _id: 1,
-//          name: 'Customer',
-//        }}
-//      />
-//    );
-//  };
-
-//  export default ChatScreen;

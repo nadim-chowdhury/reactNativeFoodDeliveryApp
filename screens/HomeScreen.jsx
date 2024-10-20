@@ -1,26 +1,57 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   FlatList,
-  TextInput,
-  Image,
   Text,
+  Image,
   TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
-import {restaurants} from '../data/restaurants';
-import {SearchBar} from 'react-native-elements';
+import { SearchBar } from 'react-native-elements';
+
+// Demo restaurant data
+const restaurants = [
+  {
+    id: 1,
+    name: 'Pizza Palace',
+    category: 'Pizza',
+    location: '123 Main St',
+    image: 'https://via.placeholder.com/100',
+  },
+  {
+    id: 2,
+    name: 'Sushi World',
+    category: 'Sushi',
+    location: '456 Ocean Blvd',
+    image: 'https://via.placeholder.com/100',
+  },
+  {
+    id: 3,
+    name: 'Burger Bonanza',
+    category: 'Burgers',
+    location: '789 Burger Ave',
+    image: 'https://via.placeholder.com/100',
+  },
+  {
+    id: 4,
+    name: 'Pizza Land',
+    category: 'Pizza',
+    location: '1011 Pine St',
+    image: 'https://via.placeholder.com/100',
+  },
+];
 
 const HomeScreen = () => {
   const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState(restaurants);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const categories = ['All', 'Pizza', 'Sushi', 'Burgers'];
 
-  const handleSearch = text => {
+  const handleSearch = (text) => {
     setSearch(text);
     if (text) {
-      const newData = restaurants.filter(item => {
+      const newData = restaurants.filter((item) => {
         const itemData = `${item.name.toUpperCase()} ${item.category.toUpperCase()}`;
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -31,295 +62,142 @@ const HomeScreen = () => {
     }
   };
 
-  const handleCategorySelect = category => {
+  const handleCategorySelect = (category) => {
     setSelectedCategory(category);
     if (category === 'All') {
       setFilteredData(restaurants);
     } else {
-      const newData = restaurants.filter(item => item.category === category);
+      const newData = restaurants.filter((item) => item.category === category);
       setFilteredData(newData);
     }
   };
 
-  const renderItem = ({item}) => (
-    <TouchableOpacity style={{marginBottom: 20}}>
-      <Image source={{uri: item.image}} style={{width: 100, height: 100}} />
-      <Text>{item.name}</Text>
-      <Text>{item.location}</Text>
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.restaurantItem}>
+      <Image source={{ uri: item.image }} style={styles.restaurantImage} />
+      <View style={styles.restaurantInfo}>
+        <Text style={styles.restaurantName}>{item.name}</Text>
+        <Text style={styles.restaurantLocation}>{item.location}</Text>
+      </View>
     </TouchableOpacity>
   );
 
   return (
-    <View style={{flex: 1, padding: 20}}>
+    <View style={styles.container}>
       <SearchBar
         placeholder="Search Restaurants or Foods..."
-        onChangeText={text => handleSearch(text)}
+        onChangeText={handleSearch}
         value={search}
         lightTheme
         round
+        containerStyle={styles.searchBarContainer}
+        inputContainerStyle={styles.searchInput}
       />
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          marginVertical: 10,
-        }}>
-        {categories.map(category => (
+
+      <View style={styles.categoryContainer}>
+        {categories.map((category) => (
           <TouchableOpacity
             key={category}
             onPress={() => handleCategorySelect(category)}
-            style={{
-              padding: 10,
-              backgroundColor: selectedCategory === category ? 'grey' : 'white',
-              borderRadius: 20,
-            }}>
+            style={[
+              styles.categoryItem,
+              selectedCategory === category && styles.selectedCategory,
+            ]}
+          >
             <Text
-              style={{
-                color: selectedCategory === category ? 'white' : 'black',
-              }}>
+              style={[
+                styles.categoryText,
+                selectedCategory === category && styles.selectedCategoryText,
+              ]}
+            >
               {category}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
+
       <FlatList
         data={filteredData}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
+        contentContainerStyle={styles.restaurantList}
       />
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f8f8',
+    paddingHorizontal: 20,
+  },
+  searchBarContainer: {
+    backgroundColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent',
+    padding: 0,
+  },
+  searchInput: {
+    backgroundColor: '#e0e0e0',
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 10,
+  },
+  categoryItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  selectedCategory: {
+    backgroundColor: '#333',
+  },
+  categoryText: {
+    color: '#333',
+  },
+  selectedCategoryText: {
+    color: '#fff',
+  },
+  restaurantList: {
+    marginTop: 10,
+  },
+  restaurantItem: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  restaurantImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+  },
+  restaurantInfo: {
+    flex: 1,
+    paddingLeft: 15,
+    justifyContent: 'center',
+  },
+  restaurantName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  restaurantLocation: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 5,
+  },
+});
+
 export default HomeScreen;
-
-// import React, { useState } from 'react';
-// import { View, FlatList, TextInput, Image, Text, TouchableOpacity } from 'react-native';
-// import { restaurants } from '../data/restaurants';
-// import { SearchBar } from 'react-native-elements';
-
-// const HomeScreen = ({ navigation }) => {
-//   const [search, setSearch] = useState('');
-//   const [filteredData, setFilteredData] = useState(restaurants);
-//   const [selectedCategory, setSelectedCategory] = useState('');
-
-//   const categories = ['All', 'Pizza', 'Sushi', 'Burgers'];
-
-//   const handleSearch = (text) => {
-//     setSearch(text);
-//     if (text) {
-//       const newData = restaurants.filter((item) => {
-//         const itemData = `${item.name.toUpperCase()} ${item.category.toUpperCase()}`;
-//         const textData = text.toUpperCase();
-//         return itemData.indexOf(textData) > -1;
-//       });
-//       setFilteredData(newData);
-//     } else {
-//       setFilteredData(restaurants);
-//     }
-//   };
-
-//   const handleCategorySelect = (category) => {
-//     setSelectedCategory(category);
-//     if (category === 'All') {
-//       setFilteredData(restaurants);
-//     } else {
-//       const newData = restaurants.filter(item => item.category === category);
-//       setFilteredData(newData);
-//     }
-//   };
-
-//   const renderItem = ({ item }) => (
-//     <TouchableOpacity style={{ marginBottom: 20 }} onPress={() => navigation.navigate('RestaurantDetails')}>
-//       <Image source={{ uri: item.image }} style={{ width: 100, height: 100 }} />
-//       <Text>{item.name}</Text>
-//       <Text>{item.location}</Text>
-//     </TouchableOpacity>
-//   );
-
-//   return (
-//     <View style={{ flex: 1, padding: 20 }}>
-//       <SearchBar
-//         placeholder="Search Restaurants or Foods..."
-//         onChangeText={(text) => handleSearch(text)}
-//         value={search}
-//         lightTheme
-//         round
-//       />
-//       <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
-//         {categories.map(category => (
-//           <TouchableOpacity
-//             key={category}
-//             onPress={() => handleCategorySelect(category)}
-//             style={{ padding: 10, backgroundColor: selectedCategory === category ? 'grey' : 'white', borderRadius: 20 }}
-//           >
-//             <Text style={{ color: selectedCategory === category ? 'white' : 'black' }}>{category}</Text>
-//           </TouchableOpacity>
-//         ))}
-//       </View>
-//       <FlatList
-//         data={filteredData}
-//         keyExtractor={(item) => item.id.toString()}
-//         renderItem={renderItem}
-//       />
-//     </View>
-//   );
-// };
-
-// export default HomeScreen;
-
-//  import React, { useState } from 'react';
-//    import { View, Text, Button, TextInput } from 'react-native';
-//    import firebase from '../firebaseConfig';
-
-//    const HomeScreen = ({ navigation }) => {
-//      const [orderId, setOrderId] = useState('');
-
-//      const trackOrder = () => {
-//        navigation.navigate('Tracking', { orderId });
-//      };
-
-//      return (
-//        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//          <Text>Enter Order ID:</Text>
-//          <TextInput
-//            value={orderId}
-//            onChangeText={setOrderId}
-//            style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 20 }}
-//          />
-//          <Button title="Track Order" onPress={trackOrder} />
-//        </View>
-//      );
-//    };
-
-//    export default HomeScreen;
-
-//  import React, { useState } from 'react';
-//    import { View, Text, Button, TextInput } from 'react-native';
-
-//    const HomeScreen = ({ navigation }) => {
-//      const [orderId, setOrderId] = useState('');
-
-//      const trackOrder = () => {
-//        navigation.navigate('Tracking', { orderId });
-//      };
-
-//      return (
-//        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//          <Text>Enter Order ID:</Text>
-//          <TextInput
-//            value={orderId}
-//            onChangeText={setOrderId}
-//            style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 20 }}
-//          />
-//          <Button title="Track Order" onPress={trackOrder} />
-//        </View>
-//      );
-//    };
-
-//    export default HomeScreen;
-
-//  import React, { useState } from 'react';
-//    import { View, Text, Button, TextInput } from 'react-native';
-
-//    const HomeScreen = ({ navigation }) => {
-//      const [orderId, setOrderId] = useState('');
-
-//      const trackOrder = () => {
-//        navigation.navigate('Tracking', { orderId });
-//      };
-
-//      const viewOrderHistory = () => {
-//        navigation.navigate('OrderHistory');
-//      };
-
-//      return (
-//        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//          <Text>Enter Order ID:</Text>
-//          <TextInput
-//            value={orderId}
-//            onChangeText={setOrderId}
-//            style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 20 }}
-//          />
-//          <Button title="Track Order" onPress={trackOrder} />
-//          <Button title="View Order History" onPress={viewOrderHistory} />
-//        </View>
-//      );
-//    };
-
-//    export default HomeScreen;
-
-// import React, { useState } from 'react';
-// import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
-
-// const HomeScreen = ({ navigation }) => {
-//   const [orderId, setOrderId] = useState('');
-
-//   const trackOrder = () => {
-//     navigation.navigate('Tracking', { orderId });
-//   };
-
-//   const viewOrderHistory = () => {
-//     navigation.navigate('OrderHistory');
-//   };
-
-//   const openSettings = () => {
-//     navigation.navigate('Settings');
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>Enter Order ID:</Text>
-//       <TextInput
-//         value={orderId}
-//         onChangeText={setOrderId}
-//         style={styles.input}
-//       />
-//       <Button title="Track Order" onPress={trackOrder} />
-//       <Button title="View Order History" onPress={viewOrderHistory} />
-//       <Button title="Settings" onPress={openSettings} />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     padding: 20,
-//   },
-//   input: {
-//     height: 40,
-//     borderColor: 'gray',
-//     borderWidth: 1,
-//     marginBottom: 20,
-//     paddingHorizontal: 10,
-//   },
-// });
-
-// export default HomeScreen;
-
-// import React from 'react';
-// import { View, Button, StyleSheet } from 'react-native';
-
-// const HomeScreen = ({ navigation }) => {
-//   return (
-//     <View style={styles.container}>
-//       <Button title="Restaurant Details" onPress={() => navigation.navigate('RestaurantDetails')} />
-//       <Button title="Manage Menu" onPress={() => navigation.navigate('MenuManagement')} />
-//       <Button title="Manage Orders" onPress={() => navigation.navigate('OrdersManagement')} />
-//       <Button title="Sales Reports" onPress={() => navigation.navigate('SalesReports')} />
-//       <Button title="User Activity Reports" onPress={() => navigation.navigate('UserActivityReports')} />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     padding: 20,
-//   },
-// });
-
-// export default HomeScreen;

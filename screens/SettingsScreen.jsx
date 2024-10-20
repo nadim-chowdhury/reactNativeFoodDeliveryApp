@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, Button, StyleSheet} from 'react-native';
+import { View, Button, StyleSheet } from 'react-native';
 
-const SettingsScreen = ({navigation}) => {
+const SettingsScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Button
@@ -34,6 +34,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: '#f8f8f8',
+  },
+  button: {
+    marginVertical: 10,
   },
 });
 

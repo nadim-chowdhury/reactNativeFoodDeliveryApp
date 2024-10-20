@@ -1,85 +1,84 @@
-import React, {useState} from 'react';
-import {View, TextInput, Button, Text} from 'react-native';
-import {auth} from '../firebaseConfig';
+import React, { useState } from 'react';
+import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { auth } from '../firebaseConfig';
 
-const SignInScreen = ({navigation}) => {
+// For demo purposes (mock authentication)
+const demoSignIn = (email, password) => {
+  if (email === 'demo@example.com' && password === 'password123') {
+    return Promise.resolve();
+  } else {
+    return Promise.reject(new Error('Invalid email or password'));
+  }
+};
+
+const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSignIn = () => {
-    auth()
-      .signInWithEmailAndPassword(email, password)
+    demoSignIn(email, password)
       .then(() => {
         navigation.navigate('Profile');
       })
-      .catch(error => setError(error.message));
+      .catch((error) => setError(error.message));
   };
 
   const handlePasswordReset = () => {
     if (email) {
-      auth()
-        .sendPasswordResetEmail(email)
-        .then(() => {
-          alert('Password reset email sent!');
-        })
-        .catch(error => setError(error.message));
+      alert('Password reset email sent!');
     } else {
       setError('Please enter your email address');
     }
   };
 
-  // const handleSignIn = () => {
-  //   auth()
-  //     .signInWithEmailAndPassword(email, password)
-  //     .then(() => {
-  //       navigation.navigate('Home');
-  //     })
-  //     .catch(error => setError(error.message));
-  // };
-
   return (
-    <View>
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+        keyboardType="email-address"
+      />
       <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        style={styles.input}
       />
-      {error ? <Text>{error}</Text> : null}
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <Button title="Sign In" onPress={handleSignIn} />
-      <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')} />
-
+      <Button
+        title="Sign Up"
+        onPress={() => navigation.navigate('SignUp')}
+      />
       <Button title="Forgot Password?" onPress={handlePasswordReset} />
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f8f8f8',
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 20,
+  },
+});
+
 export default SignInScreen;
-
-// import React from 'react';
-// import { View, Button, StyleSheet } from 'react-native';
-
-// const SettingsScreen = ({ navigation }) => {
-//   return (
-//     <View style={styles.container}>
-//       <Button title="Notification Preferences" onPress={() => navigation.navigate('NotificationPreferences')} />
-//       <Button title="Manage Payment Methods" onPress={() => navigation.navigate('PaymentMethods')} />
-//       <Button title="Address Book" onPress={() => navigation.navigate('AddressBook')} />
-//       <Button title="Privacy Settings" onPress={() => navigation.navigate('PrivacySettings')} />
-//       <Button title="FAQ" onPress={() => navigation.navigate('FAQ')} />
-//       <Button title="Contact Support" onPress={() => navigation.navigate('ContactSupport')} />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     padding: 20,
-//   },
-// });
-
-// export default SettingsScreen;

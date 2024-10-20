@@ -1,65 +1,55 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
-import {auth} from '../firebaseConfig';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { auth } from '../firebaseConfig';
 
-const ProfileScreen = ({navigation}) => {
-  const user = auth().currentUser;
+// Demo user data
+const demoUser = {
+  email: 'demo@example.com',
+};
+
+const ProfileScreen = ({ navigation }) => {
+  const user = demoUser; // Replace with `auth().currentUser` for real authentication
 
   const handleSignOut = () => {
-    auth()
-      .signOut()
-      .then(() => {
-        navigation.navigate('SignIn');
-      });
+    // Uncomment this to use real Firebase sign out
+    // auth().signOut().then(() => {
+    //   navigation.navigate('SignIn');
+    // });
+    alert('Sign out successful (demo)');
+    navigation.navigate('SignIn');
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       {user ? (
         <View>
-          <Text>Email: {user.email}</Text>
+          <Text style={styles.emailText}>Email: {user.email}</Text>
           <Button title="Sign Out" onPress={handleSignOut} />
         </View>
       ) : (
-        <Text>No user logged in</Text>
+        <Text style={styles.noUserText}>No user logged in</Text>
       )}
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f8f8f8',
+  },
+  emailText: {
+    fontSize: 18,
+    marginBottom: 20,
+    color: '#333',
+  },
+  noUserText: {
+    fontSize: 16,
+    color: '#666',
+  },
+});
+
 export default ProfileScreen;
-
-// import React, { useState } from 'react';
-// import { View, Text, Switch, StyleSheet } from 'react-native';
-
-// const PrivacySettingsScreen = () => {
-//   const [locationAccess, setLocationAccess] = useState(false);
-//   const [dataSharing, setDataSharing] = useState(false);
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.preference}>
-//         <Text>Location Access</Text>
-//         <Switch value={locationAccess} onValueChange={setLocationAccess} />
-//       </View>
-//       <View style={styles.preference}>
-//         <Text>Data Sharing</Text>
-//         <Switch value={dataSharing} onValueChange={setDataSharing} />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 20,
-//   },
-//   preference: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     marginVertical: 10,
-//   },
-// });
-
-// export default PrivacySettingsScreen;
